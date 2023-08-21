@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+        #header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+        #content {
+            margin: 2rem auto;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+        }
+        #top-strategies-graph {
+            margin-top: 2rem;
+        }
+        #best-strategy {
+            margin-top: 1rem;
+        }
+        #back-button {
+            margin-top: 1rem;
+            text-align: center;
+        }
+        button {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <h1>Results for {{ sonuc }}</h1>
+        <p>Today's Strategy: {{ today }}</p>
+    </div>
+    
+    <div id="content">
+        <div id="top-strategies-graph"></div>
+        <div id="best-strategy">
+            <p>Best Strategy: {{ best_strategy_name }}</p>
+        </div>
+        <p>Initial Capital: {{ initial_capital }}</p>
+        <p>Start Date: {{ start_date }}</p>
+        <p>Final Capital: {{ final_capital }}</p>
+    </div>
+
+    <div id="back-button">
+        <button onclick="goBack()">Go Back</button>
+    </div>
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script>
+        const layout = {
+            title: 'Top 5 Strategies and Returns',
+            xaxis: { title: 'Strategies' },
+            yaxis: { title: 'Return Rate' },
+        };
+
+        Plotly.newPlot('top-strategies-graph', [graphData], layout);
+
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

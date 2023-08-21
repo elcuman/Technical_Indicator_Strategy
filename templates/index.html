@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>ELCUMANISTAN</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    p {
+      color: #666;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+    }
+
+    select,
+    input {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #007bff;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>TRADE 512 HISSE TAKİP PLATFORMU</h1>
+    <p>
+      Bu platform, kullanıcılara bir hisse adı ve tarih seçerek ilgili hissenin 512 strateji içerisinden en iyi performans
+      gösteren stratejiyi ve bu strateji ile elde edilebilecek olasi getiri gösterir.<p>
+      <br>
+
+      </p>
+      Not: YTD !!!
+    </p>
+    <br>
+    <label for="isim2">Hisse adı:</label>
+    <select id="isim">
+      <option value="AKBNK.IS">Akbank</option>
+      <option value="ALARK.IS">Alarko</option>
+      <option value="ARCLK.IS">Arçelik</option>
+      <option value="ASELS.IS">Aselsan</option>
+      <option value="ASTOR.IS">Astor</option>
+      <option value="BIMAS.IS">Bim</option>
+      <option value="EKGYO.IS">Emlak Konut</option>
+      <option value="ENKAI.IS">Enka</option>
+      <option value="EREGL.IS">Ereğli</option>
+      <option value="FROTO.IS">Ford</option>
+      <option value="GARAN.IS">Garanti Bankası</option>
+      <option value="GUBRF.IS">Gübretaş</option>
+      <option value="HEKTS.IS">Hektaş</option>
+      <option value="ISCTR.IS">İş Bankası</option>
+      <option value="KCHOL.IS">Koç Holding</option>
+      <option value="KOZAA.IS">Koza Metal</option>
+      <option value="KOZAL.IS">Koza Altın</option>
+      <option value="KRDMD.IS">Kardemir</option>
+      <option value="ODAS.IS">Odaş</option>
+      <option value="PETKM.IS">Petkim</option>
+      <option value="PGSUS.IS">Pegasus</option>
+      <option value="SAHOL.IS">Sabancı Holding</option>
+      <option value="SASA.IS">Sasa</option>
+      <option value="SISE.IS">Şişe Cam</option>
+      <option value="TAVHL.IS">Tav Havalimanları</option>
+      <option value="TCELL.IS">Turkcell</option>
+      <option value="THYAO.IS">Türk Havayolları</option>
+      <option value="TOASO.IS">Tofaş</option>
+      <option value="TUPRS.IS">Tupraş</option>
+      <option value="YKBNK.IS">Yapıkredi Bankasu</option>
+    </select>
+
+    <br>
+
+    <label for="tarih">Tarih:</label>
+    <input type="date" id="tarih" name="tarih">
+
+    <br>
+
+    <button onclick="yolla()">Gönder</button>
+  </div>
+
+  <script>
+    function yolla() {
+      const selectedOption = document.querySelector("#isim").value;
+      const selectedDate = document.querySelector("#tarih").value;
+      window.location = '/result/' + selectedOption + '/' + selectedDate;
+    }
+  </script>
+</body>
+
+</html>
