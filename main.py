@@ -6,14 +6,23 @@ import talib as talib
 import itertools 
 import plotly.graph_objects as go
 import datetime
-import json
 
 app = Flask(__name__)
+
+@app.route("/")
+def hello_world(name=None):
+    
+    return render_template('index.html')
+    #return render_template('index.html', name=name)
+
+
+
+
 @app.route("/result/")
 @app.route('/result/<sonucdegeri>/<tarih>')
 
 
-def result_world(sonucdegeri=0,tarih=0):
+def result_world(sonucdegeri="",tarih=0):
     hisseismi= sonucdegeri+" hissesi"
     # Get the stock symbol and data range from the user
     # symbol = input("Enter the stock symbol: ")
@@ -147,19 +156,6 @@ def result_world(sonucdegeri=0,tarih=0):
         strategy_returns, _, strategy_capital = calculate_returns(df, strategy, initial_capital)
         returns.append(sum(strategy_returns))
         capitals.append(strategy_capital)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     # Find the strategy with the highest return
     max_return_index = np.argmax(returns)
