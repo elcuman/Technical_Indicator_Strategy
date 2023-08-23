@@ -1,0 +1,1 @@
+# Technical_Indicator_Strategy
