@@ -4,10 +4,10 @@ render_template
 request 
 redirect
 url_for
-yfinance as yf
-pandas as pd
-numpy as np
-talib as talib
+yfinance
+pandas
+numpy
+talib
 itertools 
-plotly.graph_objects as go
+plotly.graph_objects
 datetime
