@@ -1,8 +1,13 @@
-from flask import Flask, render_template, request , redirect, url_for
-import yfinance as yf
-import pandas as pd
-import numpy as np
-import talib as talib
-import itertools 
-import plotly.graph_objects as go
-import datetime
+
+Flask
+render_template
+request 
+redirect
+url_for
+yfinance as yf
+pandas as pd
+numpy as np
+talib as talib
+itertools 
+plotly.graph_objects as go
+datetime
