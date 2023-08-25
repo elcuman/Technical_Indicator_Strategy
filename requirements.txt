@@ -2,7 +2,7 @@ Flask
 yfinance
 pandas
 numpy
-talib
+Talib
 itertools 
 plotly.graph_objects
 datetime
