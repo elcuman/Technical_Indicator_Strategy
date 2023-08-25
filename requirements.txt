@@ -1,7 +1,8 @@
-flask
-yfinance
-pandas
-numpy
-talib
-itertools 
-datetime
+from flask import Flask, render_template, request , redirect, url_for
+import yfinance as yf
+import pandas as pd
+import numpy as np
+import talib as talib
+import itertools 
+import plotly.graph_objects as go
+import datetime
