@@ -1,7 +1,4 @@
 Flask
-request 
-redirect
-url_for
 yfinance
 pandas
 numpy
