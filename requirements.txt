@@ -2,7 +2,9 @@ Flask
 yfinance
 pandas
 numpy
-conda install -c conda-forge ta-lib
+git clone https://github.com/mrjbq7/ta-lib-python.git
+cd ta-lib-python
+python setup.py install
 itertools 
 plotly.graph_objects
 datetime
