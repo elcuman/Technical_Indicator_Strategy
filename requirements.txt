@@ -6,4 +6,3 @@ TALIB
 itertools 
 plotly.graph_objects
 datetime
-upgrade pip
