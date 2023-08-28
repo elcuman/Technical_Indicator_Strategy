@@ -2,7 +2,7 @@ Flask
 yfinance
 pandas
 numpy
-talib==0.4.0
+TA_Lib-0.4.17
 itertools 
 plotly.graph_objects
 datetime
