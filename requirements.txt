@@ -2,6 +2,4 @@ Flask
 yfinance
 pandas
 numpy
-itertools 
-plotly.graph_objects
 datetime
