@@ -2,7 +2,8 @@ Flask
 yfinance
 pandas
 numpy
-TALib
+TALIB
 itertools 
 plotly.graph_objects
 datetime
+upgrade pip
