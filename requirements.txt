@@ -1,1 +1,6 @@
+Flask
+yfinance
+pandas
+numpy
+datetime
 
