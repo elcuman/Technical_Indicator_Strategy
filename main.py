@@ -180,4 +180,4 @@ def result_world(sonucdegeri="", tarih=0):
                            start_date=start_date_str, final_capital=best_capital, best_strategy_name=best_strategy2)
 
 if __name__ == '__main__':
-    app.run(host="localhost", port=8000, debug=True)
+    app.run()
