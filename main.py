@@ -5,6 +5,9 @@ import numpy as np
 import itertools
 import plotly.graph_objects as go
 import datetime
+from datetime import timedelta
+
+
 
 app = Flask(__name__)
 
@@ -12,7 +15,7 @@ app = Flask(__name__)
 def hello_world(name=None):
     return render_template('index.html')
 
-@app.route("/result/")
+
 @app.route('/result/<sonucdegeri>/<tarih>')
 def result_world(sonucdegeri="", tarih=0):
     hisseismi = sonucdegeri + " hissesi"
@@ -36,6 +39,67 @@ def result_world(sonucdegeri="", tarih=0):
     low = df["Low"].values.astype(float)
     open_ = df["Open"].values.astype(float)
     volume = df["Volume"].values.astype(float)
+    # Define the periods for the indicators
+    sma9 = 9
+    sma21 = 21
+    sma50 = 50
+    rsi_period = 14
+    stoch_period = 14
+    adx_period = 14
+
+    # Calculate Simple Moving Averages (SMA)
+    df['SMA9'] = df['Close'].rolling(window=sma9).mean()
+    df['SMA21'] = df['Close'].rolling(window=sma21).mean()
+    df['SMA50'] = df['Close'].rolling(window=sma50).mean()
+
+    # Calculate Relative Strength Index (RSI)
+    delta = df['Close'].diff(1)
+    gain = delta.where(delta > 0, 0)
+    loss = -delta.where(delta < 0, 0)
+    avg_gain = gain.rolling(window=rsi_period).mean()
+    avg_loss = loss.rolling(window=rsi_period).mean()
+    rs = avg_gain / avg_loss
+    df['RSI'] = 100 - (100 / (1 + rs))
+
+    # Calculate Bollinger Bands
+    bb_period = 20  # Bollinger Bands period
+    rolling_mean = df['Close'].rolling(window=bb_period).mean()
+    rolling_std = df['Close'].rolling(window=bb_period).std()
+    df['BollingerBands_Mid'] = rolling_mean
+    df['BollingerBands_Up'] = rolling_mean + (rolling_std * 2)
+    df['BollingerBands_Down'] = rolling_mean - (rolling_std * 2)
+
+    # Calculate Stochastic Oscillator
+    high_max = df['High'].rolling(window=stoch_period).max()
+    low_min = df['Low'].rolling(window=stoch_period).min()
+    df['StochasticOscillator'] = ((df['Close'] - low_min) / (high_max - low_min)) * 100
+
+    # Calculate Average Directional Index (ADX)
+    def calculate_dx(df):
+        df['High-Low'] = df['High'] - df['Low']
+        df['High-Close'] = abs(df['High'] - df['Close'].shift())
+        df['Low-Close'] = abs(df['Low'] - df['Close'].shift())
+        df['TR'] = df[['High-Low', 'High-Close', 'Low-Close']].max(axis=1)
+        df['+DM'] = np.where((df['High-Close'] > df['Low-Close']) & (df['High-Close'] > 0), df['High-Close'], 0)
+        df['-DM'] = np.where((df['Low-Close'] > df['High-Close']) & (df['Low-Close'] > 0), df['Low-Close'], 0)
+        df['+DI'] = (df['+DM'].rolling(window=adx_period).sum() / df['TR'].rolling(window=adx_period).sum()) * 100
+        df['-DI'] = (df['-DM'].rolling(window=adx_period).sum() / df['TR'].rolling(window=adx_period).sum()) * 100
+        df['DX'] = (abs(df['+DI'] - df['-DI']) / (df['+DI'] + df['-DI'])) * 100
+        return df
+
+    df = calculate_dx(df)
+    df['ADX'] = df['DX'].rolling(window=adx_period).mean()
+
+    # Calculate On-Balance Volume (OBV)
+    df['OBV'] = np.where(df['Close'] > df['Close'].shift(), df['Volume'], -df['Volume'])
+    df['OBV'] = df['OBV'].cumsum()
+
+    # Calculate MACD
+    ema12 = df['Close'].ewm(span=12, adjust=False).mean()
+    ema26 = df['Close'].ewm(span=26, adjust=False).mean()
+    df['MACD'] = ema12 - ema26
+
+
 
     def generate_strategies(df):
         strategies = []
@@ -48,40 +112,33 @@ def result_world(sonucdegeri="", tarih=0):
             sell_condition = np.full_like(close, True, dtype=bool)
             for indicator in strategy:
                 if indicator == "MACD":
-                    macd = (close - np.mean(close)) / np.std(close)
+                    macd = df['MACD']
                     buy_condition = buy_condition & (macd > 0)
                     sell_condition = sell_condition & (macd < 0)
                 elif indicator == "RSI":
-                    rsi = 100 - (100 / (1 + (np.mean(close[:14]) / np.mean(close[14:]) if np.mean(close[14:]) != 0 else 1)))
+                    rsi = df['RSI']
                     buy_condition = buy_condition & (rsi < 35)
                     sell_condition = sell_condition & (rsi > 65)
                 elif indicator.startswith("SMA"):
                     period = int(indicator[3:])
-                    sma = np.mean(close[-period:])
+                    sma = df[f'SMA{period}']
                     buy_condition = buy_condition & (close > sma)
                     sell_condition = sell_condition & (close < sma)
                 elif indicator == "BollingerBands":
-                    sma = np.mean(close)
-                    std = np.std(close)
-                    upper = sma + 2 * std
-                    lower = sma - 2 * std
+                    lower = df['BollingerBands_Down']
+                    upper = df['BollingerBands_Up']
                     buy_condition = buy_condition & (close > lower)
                     sell_condition = sell_condition & (close < upper)
                 elif indicator == "StochasticOscillator":
-                    k_period = 14
-                    d_period = 3
-                    k_values = 100 * ((close - np.min(low[-k_period:])) / (np.max(high[-k_period:]) - np.min(low[-k_period:])))
-                    d_values = np.mean(k_values[-d_period:])
-                    buy_condition = buy_condition & (k_values[-1] < 20) & (d_values < 20)
-                    sell_condition = sell_condition & (k_values[-1] > 80) & (d_values > 80)
+                    stoch = df['StochasticOscillator']
+                    buy_condition = buy_condition & (stoch < 20)
+                    sell_condition = sell_condition & (stoch > 80)
                 elif indicator == "ADX":
-                    adx_period = 14
-                    dx = 100 * np.mean(np.abs((np.mean(high[-adx_period:]) - np.mean(low[-adx_period:])) / (np.mean(high[-adx_period:]) + np.mean(low[-adx_period:]))))
-                    buy_condition = buy_condition & (dx > 25)
-                    sell_condition = sell_condition & (dx < 20)
+                    adx = df['ADX']
+                    buy_condition = buy_condition & (adx > 25)
+                    sell_condition = sell_condition & (adx < 20)
                 elif indicator == "OBV":
-                    obv_values = np.where(close > close[-1], volume, -volume)
-                    obv = np.cumsum(obv_values)
+                    obv = df['OBV']
                     buy_condition = buy_condition & (obv > 0)
                     sell_condition = sell_condition & (obv < 0)
             strategies.append({
@@ -90,6 +147,8 @@ def result_world(sonucdegeri="", tarih=0):
                 "sell_condition": sell_condition
             })
         return strategies
+
+
 
     def calculate_returns(df, strategy, initial_capital):
         returns = []
@@ -170,14 +229,13 @@ def result_world(sonucdegeri="", tarih=0):
     strategy_names = [f"Strategy {i + 1}: {strategy['strategy']}" for i, strategy in enumerate(top_5_strategies)]
     strategy_returns = [sum(calculate_returns(df, strategy, initial_capital)[0]) for strategy in top_5_strategies]
 
-    fig = go.Figure(data=[go.Bar(x=strategy_names, y=strategy_returns)])
-    fig.update_layout(title='Top 5 Strategies and Returns',
-                      xaxis_title='Strategies',
-                      yaxis_title='Return Rate')
 
     return render_template('result.html', sonuc=hisseismi, today=today_strategy,
                            initial_capital=initial_capital,
-                           start_date=start_date_str, final_capital=best_capital, best_strategy_name=best_strategy2)
+                           start_date=start_date_str, final_capital=best_capital,
+                           best_strategy_name=best_strategy2,
+                           top_5_strategies=top_5_strategies, strategy_returns=strategy_returns)
+
 
 if __name__ == '__main__':
     app.run()
